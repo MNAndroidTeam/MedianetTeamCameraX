@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent=new Intent(this, TakePicture.class);
-        intent.putExtra("absolutePath", getExternalMediaDirs()[0]+"/mbh.jpg");
+       // intent.putExtra("absolutePath", getExternalMediaDirs()[0]+"/mbh.jpg");
         startActivityForResult(intent,4413);
     }
 

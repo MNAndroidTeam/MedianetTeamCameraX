@@ -5,29 +5,57 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Rational;
+import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.AspectRatio;
+import androidx.camera.core.CameraIdFilter;
+import androidx.camera.core.CameraIdFilterSet;
 import androidx.camera.core.CameraX;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageAnalysisConfig;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureConfig;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.core.PreviewConfig;
+import androidx.camera.core.UseCase;
+import androidx.constraintlayout.solver.widgets.Analyzer;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.io.File;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class TakePicture extends AppCompatActivity implements View.OnClickListener {
 
@@ -73,12 +101,21 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
         } catch (Exception e) {
             e.printStackTrace();
         }
+        DisplayMetrics metrics = new DisplayMetrics();
+      //  getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        viewFinder.getDisplay().getMetrics(metrics);
+        Size screenSize =new  Size(metrics.widthPixels, metrics.heightPixels);
         // Create configuration object for the viewfinder use case
-        PreviewConfig previewConfig = new PreviewConfig.Builder().setLensFacing(switchFrontBack).build();
+        PreviewConfig previewConfig = new PreviewConfig.Builder().
+                setLensFacing(switchFrontBack)
+               // .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                .setTargetResolution(screenSize)
+                .build();
 
 
         // Build the viewfinder use case
         preview = new Preview(previewConfig);
+
 
 
         // Every time the viewfinder is updated, recompute layout
@@ -149,6 +186,39 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
                         });
             }
         });
+
+        // Setup image analysis pipeline that computes average pixel luminance in real time
+        ImageAnalysisConfig analyzerConfig =new ImageAnalysisConfig.Builder()
+           .setLensFacing(switchFrontBack)
+            // In our analysis, we care more about the latest image than analyzing *every* image
+            .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+            // Set initial target rotation, we will have to call this again if rotation changes
+            // during the lifecycle of this use case
+            .setTargetRotation(viewFinder.getDisplay().getRotation())
+        .build();
+
+
+
+/*
+        ImageAnalysisConfig config =
+                new ImageAnalysisConfig.Builder()
+                        .setLensFacing(switchFrontBack)
+                        .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                        .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+                        .build();
+
+        ImageAnalysis imageAnalysis = new ImageAnalysis(config);
+
+        imageAnalysis.setAnalyzer(executor, new ImageAnalysis.Analyzer() {
+            @Override
+            public void analyze(ImageProxy image, int rotationDegrees) {
+                Log.e("aaaaaaaaaa",rotationDegrees+"eeee");
+            }
+        });*/
+
+
+
+
         // Bind use cases to lifecycle
         // If Android Studio complains about "this" being not a LifecycleOwner
         // try rebuilding the project or updating the appcompat dependency to
@@ -156,6 +226,13 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
         CameraX.bindToLifecycle(this, preview, imageCapture);
 
     }
+
+    private ImageAnalysis setImageAnalysis() {
+
+     return null;
+
+    }
+
 
     private void updateTransform() {
         Matrix matrix = new Matrix();
@@ -179,6 +256,7 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
             case Surface.ROTATION_270:
                 rotationDegrees = 270;
                 break;
+                default: updateTransform();
         }
 
         matrix.postRotate(-(float) rotationDegrees, centerX, centerY);
@@ -248,6 +326,16 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
         }else if(view.getId()==R.id.action_flash_on_off){
             openTorch=!openTorch;
             preview.enableTorch(openTorch);
+            if (openTorch) ((FloatingActionButton)view).setColorFilter(ContextCompat.getColor(this, android.R.color.holo_orange_light), PorterDuff.Mode.SRC_IN);
+            else  ((FloatingActionButton)view).setColorFilter(ContextCompat.getColor(this, android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
+
+
         }
     }
+
+
+    public interface LumaListener {
+        void listener(Double d);
+    }
+
 }

@@ -12,77 +12,62 @@
         android:id="@+id/texture"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/color_transparent"
-        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_take_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:backgroundTint="@android:color/white"
-            app:elevation="8dp"
-            app:fabCustomSize="60dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:maxImageSize="30dp"
-            app:rippleColor="@android:color/holo_orange_dark"
-            app:srcCompat="@drawable/ic_camera_black_24dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/action_take_picture"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/color_transparent"
+        app:backgroundTint="@android:color/black"
+        app:elevation="8dp"
+        app:fabCustomSize="60dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/texture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_goneMarginBottom="16dp"
+        app:maxImageSize="30dp"
+        app:tint="@android:color/white"
+        app:rippleColor="@android:color/holo_orange_dark"
+        app:srcCompat="@drawable/ic_camera_black_24dp" />
 
-        <ImageView
-            android:id="@+id/action_flash_on_off"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:tint="#ffffff"
-            android:layout_marginRight="16dp"
-            android:src="@mipmap/ic_flash"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/action_turn_camera"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            app:backgroundTint="@android:color/white"
-            app:elevation="8dp"
-            app:fabSize="mini"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:maxImageSize="16dp"
-            app:rippleColor="@android:color/holo_orange_dark"
-            app:srcCompat="@mipmap/turn_camera" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/action_flash_on_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        app:backgroundTint="@android:color/black"
+        app:elevation="8dp"
+        app:fabSize="mini"
+        app:fabCustomSize="36dp"
+        app:layout_constraintBottom_toBottomOf="@+id/action_turn_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/action_turn_camera"
+        app:maxImageSize="16dp"
+        app:rippleColor="@color/orange"
+        app:srcCompat="@mipmap/ic_flash"
+        app:tint="@android:color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/action_turn_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        app:backgroundTint="@android:color/black"
+        android:layout_marginBottom="8dp"
+        app:fabCustomSize="36dp"
+        app:elevation="8dp"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:maxImageSize="16dp"
+        app:rippleColor="@android:color/holo_orange_dark"
+        app:srcCompat="@mipmap/turn_camera"
+        app:tint="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
