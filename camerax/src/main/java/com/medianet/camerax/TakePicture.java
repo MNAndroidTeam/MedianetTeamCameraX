@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -15,25 +17,34 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Rational;
 import android.util.Size;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
+import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraIdFilter;
 import androidx.camera.core.CameraIdFilterSet;
+import androidx.camera.core.CameraInfo;
+import androidx.camera.core.CameraInfoInternal;
+import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraX;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageAnalysisConfig;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureConfig;
 import androidx.camera.core.ImageProxy;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.PreviewConfig;
 import androidx.camera.core.UseCase;
@@ -43,6 +54,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -57,18 +69,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static android.hardware.camera2.CaptureRequest.SCALER_CROP_REGION;
+
 public class TakePicture extends AppCompatActivity implements View.OnClickListener {
 
 
     private final int REQUEST_CODE_PERMISSIONS = 10;
     CameraX.LensFacing switchFrontBack= CameraX.LensFacing.FRONT;
-    private String[] REQUIRED_PERMISSIONS =  {Manifest.permission.CAMERA};
+    private String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private TextureView viewFinder;
     private boolean openTorch=false;
     private String filePath="";
     private Preview preview;
-
+    private CameraInfo cameraInfo;
+    private CameraControl cameraControl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +178,10 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
 
                                         Intent returnIntent = new Intent();
                                         returnIntent.putExtra("image_absolute_path",file.getAbsolutePath());
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        viewFinder.getBitmap().compress(Bitmap.CompressFormat.PNG, 70, stream);
+                                        byte[] byteArray = stream.toByteArray();
+                                        returnIntent.putExtra("imageByteArray",byteArray);
                                         setResult(4413,returnIntent);
                                         finish();
                                     }
@@ -197,8 +216,6 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
             .setTargetRotation(viewFinder.getDisplay().getRotation())
         .build();
 
-
-
 /*
         ImageAnalysisConfig config =
                 new ImageAnalysisConfig.Builder()
@@ -224,6 +241,9 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
         // try rebuilding the project or updating the appcompat dependency to
         // version 1.1.0 or higher.
         CameraX.bindToLifecycle(this, preview, imageCapture);
+
+
+
 
     }
 
@@ -334,8 +354,60 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
     }
 
 
-    public interface LumaListener {
-        void listener(Double d);
+    private void setUpTapToFocus() {
+    /*    viewFinder.setOnTouchListener((v,e)-> {
+            if (e.getAction() != MotionEvent.ACTION_UP) {
+                return false;
+            }
+
+            PointF point =  new MeteringPointFactory().createPoint(e.getX(),e.getY());
+            val action = FocusMeteringAction.Builder.from(point).build()
+            cameraControl.startFocusAndMetering(action)
+            return true;
+        });*/
     }
+
+    private void setUpPinchToZoom() {
+      /*  ScaleGestureDetector.SimpleOnScaleGestureListener listener =new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                float currentZoomRatio = cameraInfo.;
+                val delta = detector.scaleFactor
+                cameraControl.setZoomRatio(currentZoomRatio * delta)
+                return true
+            }
+        }
+
+        ScaleGestureDetector scaleGestureDetector =new ScaleGestureDetector(this, listener);
+
+        cameraTextureView.setOnTouchListener { _, event ->
+                scaleGestureDetector.onTouchEvent(event)
+            return@setOnTouchListener true
+        }*/
+
+    }
+
+    private void setUpZoomSlider() {
+       /* SeekBar zoomSlider = null;
+        zoomSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                cameraControl.(progress / 100.toFloat());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });*/
+    }
+
+
+
 
 }
