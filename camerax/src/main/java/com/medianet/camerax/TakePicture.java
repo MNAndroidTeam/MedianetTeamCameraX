@@ -62,7 +62,7 @@ public class TakePicture extends AppCompatActivity implements View.OnClickListen
 
     private final int REQUEST_CODE_PERMISSIONS = 10;
     CameraX.LensFacing switchFrontBack= CameraX.LensFacing.FRONT;
-    private String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    private String[] REQUIRED_PERMISSIONS =  {Manifest.permission.CAMERA};
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private TextureView viewFinder;
     private boolean openTorch=false;
